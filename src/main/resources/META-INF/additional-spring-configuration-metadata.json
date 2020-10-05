@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "story.update.retry.time.seconds",
+      "type": "java.lang.String",
+      "description": "Description for story.update.retry.time.seconds."
+  }
+] }
