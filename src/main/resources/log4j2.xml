@@ -6,8 +6,8 @@
         </Console>
 
         <RollingFile name="RollingFile"
-                     fileName="/appLogs/assignment.log"
-                     filePattern="/appLogs/$${date:yyyy-MM}/assignment-%d{-dd-MMMM-yyyy}-%i.log.gz">
+                     fileName="${sys:user.home}/appLogs/assignment.log"
+                     filePattern="${sys:user.home}/appLogs/$${date:yyyy-MM}/assignment-%d{-dd-MMMM-yyyy}-%i.log.gz">
             <PatternLayout>
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>
             </PatternLayout>

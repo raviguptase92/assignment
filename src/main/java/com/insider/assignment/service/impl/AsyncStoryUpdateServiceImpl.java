@@ -87,6 +87,12 @@ public class AsyncStoryUpdateServiceImpl implements AsyncStoryUpdateService {
         try {
             logger.debug("Update story started");
             List<Integer> topStories = (List<Integer>) httpService.makeGetRequest(Constants.TOP_STORY_API, List.class);
+            if(CollectionUtils.isEmpty(topStories)) {
+                // will retry after retry duration
+                raiseUpdateEvent(storyUpdateRetryTime * 1000);
+                return;
+            }
+
             List<StoryDTO> storyDTOS = new ArrayList<>();
             List<Future<HNItem>> hnItemList = new ArrayList<>();
             for (Integer topStory : topStories) {
@@ -146,14 +152,12 @@ public class AsyncStoryUpdateServiceImpl implements AsyncStoryUpdateService {
         // Evict top story cache
         Cache cache = cacheManager.getCache(Constants.TOP_STORY_CACHE);
         if(cache != null) {
-            logger.info("{} cache not present", Constants.TOP_STORY_CACHE);
             cache.clear();
         }
 
         // Evict past story cache
         Cache pastStoryCache = cacheManager.getCache(Constants.PAST_STORY_CACHE);
         if(pastStoryCache != null) {
-            logger.info("{} cache not present", Constants.PAST_STORY_CACHE);
             pastStoryCache.clear();
         }
         logger.debug("Caches evicted successfully");

@@ -20,7 +20,7 @@ public class CommentController {
 
     @GetMapping("/comments")
     @ResponseBody
-    @Cacheable(Constants.COMMENT_CACHE)
+    @Cacheable(value=Constants.COMMENT_CACHE, unless = "#result==null or #result.size()==0")
     public List<CommentDTO> comments(@RequestParam("storyId") Integer storyId) throws Exception {
         return commentService.getComments(storyId);
     }

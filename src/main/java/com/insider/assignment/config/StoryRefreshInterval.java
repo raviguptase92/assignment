@@ -26,7 +26,7 @@ public class StoryRefreshInterval {
 
     public static final String LAST_REFRESH_TIME = "lastRefreshTime";
 
-    private static final Logger logger = LogManager.getLogger(CommentServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(StoryRefreshInterval.class);
 
     public boolean needUpdate() {
         Cache timeCache = cacheManager.getCache(STORY_REFRESH_CACHE);
@@ -41,7 +41,9 @@ public class StoryRefreshInterval {
         }
 
         Date currentTime = new Date();
-        Date relativeTime = new Date(lastRefreshTime.getTime() + (storyCacheTime * Constants.ONE_MINUTE_IN_MILLIS));
+
+        // Adding buffer of 30 seconds for soft handover in case of overlapping
+        Date relativeTime = new Date(lastRefreshTime.getTime() + (storyCacheTime * Constants.ONE_MINUTE_IN_MILLIS) - 30000);
         return relativeTime.before(currentTime);
     }
 

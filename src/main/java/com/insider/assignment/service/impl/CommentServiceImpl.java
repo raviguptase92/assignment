@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -32,7 +33,17 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> getComments(Integer storyId) throws ExecutionException, InterruptedException {
+        if(storyId == null) {
+            logger.warn("Getting empty storyId");
+            return new ArrayList<>();
+        }
+
         HNItem hnStory = httpService.makeGetRequest(String.format(Constants.ITEM_API, storyId), HNItem.class);
+        if(hnStory == null) {
+            logger.error("Not a valid story id {}", storyId);
+            return new ArrayList<>();
+        }
+
         List<Integer> storyComments = hnStory.getKids();
         List<Future<HNItem>> hnComments = new ArrayList<>();
         Map<String, HNUser> userMap = new ConcurrentHashMap<>();
@@ -42,7 +53,7 @@ public class CommentServiceImpl implements CommentService {
                 String commentUrl = String.format(Constants.ITEM_API, storyComments.get(finalI));
                 HNItem hnComment = httpService.makeGetRequest(commentUrl, HNItem.class);
                 HNUser hnUser;
-                if (!userMap.containsKey(hnComment.getBy())) {
+                if (hnComment != null && !StringUtils.isEmpty(hnComment.getBy()) && !userMap.containsKey(hnComment.getBy())) {
                     String userApi = String.format(Constants.USER_API, hnComment.getBy());
                     hnUser = httpService.makeGetRequest(userApi, HNUser.class);
                     if (hnUser != null) {
@@ -63,12 +74,18 @@ public class CommentServiceImpl implements CommentService {
         List<CommentDTO> comments = new ArrayList<>();
         for (Future<HNItem> hnItem: hnComments) {
             HNItem hnComment = hnItem.get();
-            HNUser hnUser = userMap.get(hnComment.getBy());
+            if(hnComment == null) {
+                continue;
+            }
+
             CommentDTO comment = new CommentDTO();
             comment.setText(hnComment.getText());
-            if (hnUser != null) {
-                comment.setHnHandle(hnUser.getId());
-                comment.setHnAge(hnUser.getAge());
+            if(!StringUtils.isEmpty(hnComment.getBy())) {
+                HNUser hnUser = userMap.get(hnComment.getBy());
+                if (hnUser != null) {
+                    comment.setHnHandle(hnUser.getId());
+                    comment.setHnAge(hnUser.getAge());
+                }
             }
             comments.add(comment);
         }

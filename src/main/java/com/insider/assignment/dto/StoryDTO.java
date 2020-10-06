@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -17,6 +18,9 @@ public class StoryDTO implements Comparable<StoryDTO> {
 
     @Override
     public int compareTo(StoryDTO another) {
-        return another.getScore() - this.score;
+        if(this.score == null && another.score == null) {
+            return 0;
+        }
+        return another.getScore() - Objects.requireNonNullElse(this.score, 0);
     }
 }

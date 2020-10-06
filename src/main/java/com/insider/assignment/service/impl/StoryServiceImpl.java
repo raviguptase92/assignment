@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,14 @@ public class StoryServiceImpl implements StoryService {
     private TopStoryRepository topStoryRepository;
 
     @Override
-    @Cacheable(Constants.TOP_STORY_CACHE)
+    @Cacheable(value=Constants.TOP_STORY_CACHE, unless = "#result==null or #result.size()==0")
     public List<StoryDTO> getTopStories() {
         List<TopStory> storyList = topStoryRepository.findTop10ByOrderByScoreDesc();
         List<StoryDTO> top10Stories = new ArrayList<>();
+        if(CollectionUtils.isEmpty(storyList)) {
+            return top10Stories;
+        }
+
         for (TopStory topStory: storyList) {
             top10Stories.add(Converter.buildStoryDTOFromTopStory(topStory));
         }
@@ -41,6 +46,10 @@ public class StoryServiceImpl implements StoryService {
     public List<StoryDTO> getPastStories() {
         List<Story> pastStories = storyRepository.findAll();
         List<StoryDTO> storyDTOS = new ArrayList<>();
+        if(CollectionUtils.isEmpty(pastStories)) {
+            return storyDTOS;
+        }
+
         for (Story story: pastStories) {
             storyDTOS.add(Converter.buildStoryDTOFromEntity(story));
         }

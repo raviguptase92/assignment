@@ -10,22 +10,37 @@ import java.util.Date;
 public class Converter {
 
     public static StoryDTO buildStoryDTOFromHNStory(HNItem hnStory) {
+        if(hnStory == null) {
+            return null;
+        }
         return getStoryDTO(hnStory.getId(), hnStory.getTitle(), hnStory.getUrl(), hnStory.getScore(), hnStory.getTime(), hnStory.getBy());
     }
 
     public static StoryDTO buildStoryDTOFromEntity(Story story) {
+        if(story == null) {
+            return null;
+        }
         return getStoryDTO(story.getId(), story.getTitle(), story.getUrl(), story.getScore(), story.getTimeOfSubmission(), story.getAuthor());
     }
 
     public static StoryDTO buildStoryDTOFromTopStory(TopStory topStory) {
+        if(topStory == null) {
+            return null;
+        }
         return getStoryDTO(topStory.getId(), topStory.getTitle(), topStory.getUrl(), topStory.getScore(), topStory.getTimeOfSubmission(), topStory.getAuthor());
     }
 
     public static TopStory buildTopStoryFromDTO(StoryDTO storyDTO) {
+        if(storyDTO == null) {
+            return null;
+        }
         return getTopStory(storyDTO.getId(), storyDTO.getTitle(), storyDTO.getUrl(), storyDTO.getScore(), storyDTO.getTimeOfSubmission(), storyDTO.getAuthor());
     }
 
     public static Story buildStoryFromTopStory(TopStory topStory) {
+        if(topStory == null) {
+            return null;
+        }
         return getStory(topStory.getId(), topStory.getTitle(), topStory.getUrl(), topStory.getScore(), topStory.getTimeOfSubmission(), topStory.getAuthor());
     }
 
