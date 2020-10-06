@@ -12,7 +12,7 @@ This project depends on following software modules :
 
 <br>
 
->####How to run following this project ??
+>####How to run this project ??
 
 You can follow just few simple steps to run this project (You will need Java 11 to run this project) : 
 
